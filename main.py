@@ -10,6 +10,8 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 
+from match_scraper.matches_scraper import find_esports_soccer_matches
+
 
 def get_webdriver(port, driver_path):
     chrome_options = Options()
@@ -40,12 +42,16 @@ def main():
         wait.until(
             EC.invisibility_of_element_located((By.XPATH, "//div[contains(@class, 'bl-Preloader_Spinner')]"))
         )
-        esoccer_logo = driver.find_element(By.XPATH, "//div[@class='ovm-EsportsCompetitionList_Title ovm-EsportsClassificationHeader ' and text()='Esoccer']")
-        esoccer_tab = esoccer_logo.find_element(By.XPATH, "../..")
-        matches = esoccer_tab.find_elements(By.XPATH, ".//div[@class='ovm-FixtureDetailsTwoWaySoccer ovm-FixtureDetailsTwoWaySoccer-1 ']")
+        matches = find_esports_soccer_matches(driver)
         print(matches)
+        match = matches[0]
+        print("want to click")
+        time.sleep(1)
+
+        match.click()
+        print("clicked")
         driver.find_element(By.TAG_NAME, 'body').send_keys(Keys.CONTROL + 't')
-        time.sleep(2)
+        time.sleep(4)
         # driver.execute_script("window.open('https://www.bet365.com/#/IP/B1', 'new window')")
         # windows = driver.window_handles
         # print(windows)
