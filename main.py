@@ -3,8 +3,12 @@ import os
 import time
 from dotenv import load_dotenv
 from selenium import webdriver
+from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.wait import WebDriverWait
 
 
 def get_webdriver(port, driver_path):
@@ -29,8 +33,30 @@ def main():
     port = get_debug_port(os.getenv('PROFILE_ID'))
     driver = get_webdriver(port, os.getenv('DRIVER_PATH'))
     driver.maximize_window()
-    driver.get("https://www.bet365.com/#/HO/")
-    time.sleep(10)
+    try:
+        wait = WebDriverWait(driver, 30)
+
+        driver.get("https://www.bet365.com/#/IP/B151")
+        wait.until(
+            EC.invisibility_of_element_located((By.XPATH, "//div[contains(@class, 'bl-Preloader_Spinner')]"))
+        )
+        esoccer_logo = driver.find_element(By.XPATH, "//div[@class='ovm-EsportsCompetitionList_Title ovm-EsportsClassificationHeader ' and text()='Esoccer']")
+        esoccer_tab = esoccer_logo.find_element(By.XPATH, "../..")
+        matches = esoccer_tab.find_elements(By.XPATH, ".//div[@class='ovm-FixtureDetailsTwoWaySoccer ovm-FixtureDetailsTwoWaySoccer-1 ']")
+        print(matches)
+        driver.find_element(By.TAG_NAME, 'body').send_keys(Keys.CONTROL + 't')
+        time.sleep(2)
+        # driver.execute_script("window.open('https://www.bet365.com/#/IP/B1', 'new window')")
+        # windows = driver.window_handles
+        # print(windows)
+        #
+        # driver.switch_to.window(windows[1])
+        # time.sleep(2)
+        # driver.switch_to.window(windows[0])
+        # time.sleep(2)
+    finally:
+        driver.quit()
+
 
 
 if __name__ == "__main__":
